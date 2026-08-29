@@ -35,15 +35,20 @@ them correctly yourself, without depending on a vendor abstraction layer.
 
 Board: MSP-EXP432P401R LaunchPad.
 
-<!-- TODO: fill in the on-board RGB LED (LED2) port/pin wiring, e.g.:
-| Color | Pin |
-| ----- | --- |
-| Red   | PxY |
-| Green | PxY |
-| Blue  | PxY |
--->
+### RGB LED Pins
 
-<!-- TODO: fill in which pins the two push-buttons (S1, S2) are wired to. -->
+| Color | Pin  |
+| ----- | ---- |
+| Red   | P2.0 |
+| Green | P2.1 |
+| Blue  | P2.2 |
+
+The two push-buttons (S1, S2) are also wired to GPIO pins, but you'll need to
+find exactly which ones yourself from the
+[MSP-EXP432P401R LaunchPad User's Guide](../datasheets/MSP%E2%80%91EXP432P401R_user_guide.pdf).
+
+> [!TIP]
+> Hint: consider which pull resistors you need for these switches, if any.
 
 ## Grading Rubric (50 pt)
 
