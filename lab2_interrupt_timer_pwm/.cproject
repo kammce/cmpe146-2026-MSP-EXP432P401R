@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+    <storageModule moduleId="org.eclipse.cdt.core.settings">
+        <cconfiguration id="com.ti.ccstudio.buildDefinitions.MSP432.Debug.294453949">
+            <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.ti.ccstudio.buildDefinitions.MSP432.Debug.294453949" moduleId="org.eclipse.cdt.core.settings" name="Debug">
+                <externalSettings/>
+                <extensions>
+                    <extension id="org.eclipse.cdt.core.GmakeErrorParser" point="com.ti.ccs.project.ErrorParser"/>
+                    <extension id="org.eclipse.cdt.core.GASErrorParser" point="com.ti.ccs.project.ErrorParser"/>
+                    <extension id="org.eclipse.cdt.core.GLDErrorParser" point="com.ti.ccs.project.ErrorParser"/>
+                    <extension id="org.eclipse.cdt.core.GCCErrorParser" point="com.ti.ccs.project.ErrorParser"/>
+                </extensions>
+            </storageModule>
+            <storageModule moduleId="cdtBuildSystem" version="4.0.0">
+                <configuration artifactExtension="out" artifactName="${ProjName}" buildProperties="" cleanCommand="${CG_CLEAN_CMD}" description="" id="com.ti.ccstudio.buildDefinitions.MSP432.Debug.294453949" name="Debug" parent="com.ti.ccstudio.buildDefinitions.MSP432.Debug">
+                    <folderInfo id="com.ti.ccstudio.buildDefinitions.MSP432.Debug.294453949." name="/" resourcePath="">
+                        <toolChain id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.exe.DebugToolchain.578364643" name="TI Build Tools" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.exe.DebugToolchain" targetTool="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.exe.linkerDebug.2133573172">
+                            <option id="com.ti.ccstudio.buildDefinitions.core.OPT_TAGS.167708654" superClass="com.ti.ccstudio.buildDefinitions.core.OPT_TAGS" valueType="stringList">
+                                <listOptionValue value="DEVICE_CONFIGURATION_ID=MSP432P401R"/>
+                                <listOptionValue value="DEVICE_CORE_ID="/>
+                                <listOptionValue value="DEVICE_ENDIANNESS=little"/>
+                                <listOptionValue value="OUTPUT_FORMAT=ELF"/>
+                                <listOptionValue value="CCS_MBS_VERSION=70.0.0"/>
+                                <listOptionValue value="RUNTIME_SUPPORT_LIBRARY="/>
+                                <listOptionValue value="OUTPUT_TYPE=executable"/>
+                                <listOptionValue value="PRODUCTS=com.ti.SIMPLELINK_MSP432_SDK:3.40.1.02;"/>
+                                <listOptionValue value="PRODUCT_MACRO_IMPORTS={&quot;com.ti.SIMPLELINK_MSP432_SDK&quot;:[&quot;${COM_TI_SIMPLELINK_MSP432_SDK_INCLUDE_PATH}&quot;,&quot;${COM_TI_SIMPLELINK_MSP432_SDK_LIBRARY_PATH}&quot;,&quot;${COM_TI_SIMPLELINK_MSP432_SDK_LIBRARIES}&quot;,&quot;${COM_TI_SIMPLELINK_MSP432_SDK_SYMBOLS}&quot;,&quot;${COM_TI_SIMPLELINK_MSP432_SDK_SYSCONFIG_MANIFEST}&quot;]}"/>
+                            </option>
+                            <option id="com.ti.ccstudio.buildDefinitions.core.OPT_CODEGEN_VERSION.379243422" superClass="com.ti.ccstudio.buildDefinitions.core.OPT_CODEGEN_VERSION" value="GNU_15.3.1:Free Software Foundation" valueType="string"/>
+                            <targetPlatform id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.exe.targetPlatformDebug.1391739825" name="Platform" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.exe.targetPlatformDebug"/>
+                            <builder buildPath="${BuildDirectory}" id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.exe.builderDebug.967154391" keepEnvironmentInBuildfile="false" name="GNU Make" parallelBuildOn="true" parallelizationNumber="optimal" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.exe.builderDebug"/>
+                            <tool id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.exe.compilerDebug.716278996" name="GNU Compiler" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.exe.compilerDebug">
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.DEBUG.744585731" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.DEBUG" value="true" valueType="boolean"/>
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.STRICT_DWARF.1417849366" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.STRICT_DWARF" value="true" valueType="boolean"/>
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.DWARF_VERSION.912903511" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.DWARF_VERSION" value="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.DWARF_VERSION.3" valueType="enumerated"/>
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.INCLUDE_PATH.584421955" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.INCLUDE_PATH" valueType="includePath">
+                                    <listOptionValue value="${COM_TI_SIMPLELINK_MSP432_SDK_INCLUDE_PATH}"/>
+                                    <listOptionValue value="${PROJECT_ROOT}"/>
+                                    <listOptionValue value="${COM_TI_SIMPLELINK_MSP432_SDK_INSTALL_DIR}/source"/>
+                                    <listOptionValue value="${COM_TI_SIMPLELINK_MSP432_SDK_INSTALL_DIR}/source/third_party/CMSIS/Include"/>
+                                    <listOptionValue value="${CG_TOOL_ROOT}/arm-none-eabi/include/newlib-nano"/>
+                                    <listOptionValue value="${CG_TOOL_ROOT}/arm-none-eabi/include"/>
+                                </option>
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.DEFINE.869224826" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.DEFINE" valueType="definedSymbols">
+                                    <listOptionValue value="${COM_TI_SIMPLELINK_MSP432_SDK_SYMBOLS}"/>
+                                    <listOptionValue value="__MSP432P401R__"/>
+                                    <listOptionValue value="DeviceFamily_MSP432P401x"/>
+                                </option>
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.MCPU.912193473" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.MCPU" value="cortex-m4" valueType="string"/>
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.MARCH.1367109265" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.MARCH" value="armv7e-m" valueType="string"/>
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.CODE_STATE.919665159" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.CODE_STATE" value="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.CODE_STATE.THUMB" valueType="enumerated"/>
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.STD_C.255272363" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.STD_C" value="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.STD_C.C18" valueType="enumerated"/>
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.STD_CPP.818981297" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.STD_CPP" value="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.STD_CPP.CPP2A" valueType="enumerated"/>
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.MFLOAT_ABI.549681260" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.MFLOAT_ABI" value="hard" valueType="string"/>
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.MFPU.141871236" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.MFPU" value="fpv4-sp-d16" valueType="string"/>
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.FUNCTION_SECTIONS.1795063922" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.FUNCTION_SECTIONS" value="true" valueType="boolean"/>
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.DATA_SECTIONS.2024320769" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.DATA_SECTIONS" value="true" valueType="boolean"/>
+                            </tool>
+                            <tool id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.exe.linkerDebug.2133573172" name="GNU Linker" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.exe.linkerDebug">
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.OUTPUT_FILE.1685089858" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.OUTPUT_FILE" value="${ProjName}.out" valueType="string"/>
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.MAP_FILE.1640205092" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.MAP_FILE" value="${ProjName}.map" valueType="string"/>
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.GROUP_LIBS.1416401656" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.GROUP_LIBS" value="false" valueType="boolean"/>
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.SEARCH_PATH.1454669016" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.SEARCH_PATH" valueType="libPaths">
+                                    <listOptionValue value="${COM_TI_SIMPLELINK_MSP432_SDK_LIBRARY_PATH}"/>
+                                    <listOptionValue value="${COM_TI_SIMPLELINK_MSP432_SDK_INSTALL_DIR}/source"/>
+                                    <listOptionValue value="${CG_TOOL_ROOT}/arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard"/>
+                                </option>
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.LIBRARY.829562830" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.LIBRARY" valueType="libs">
+                                    <listOptionValue value="${COM_TI_SIMPLELINK_MSP432_SDK_LIBRARIES}"/>
+                                    <listOptionValue value="ti/devices/msp432p4xx/driverlib/gcc/msp432p4xx_driverlib.a"/>
+                                    <listOptionValue value="gcc"/>
+                                    <listOptionValue value="c"/>
+                                    <listOptionValue value="m"/>
+                                    <listOptionValue value="rdimon"/>
+                                </option>
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.OTHER_FLAGS.35926803" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.OTHER_FLAGS" valueType="stringList">
+                                    <listOptionValue value="-march=armv7e-m"/>
+                                    <listOptionValue value="-mthumb"/>
+                                    <listOptionValue value="-mfloat-abi=hard"/>
+                                    <listOptionValue value="-mfpu=fpv4-sp-d16"/>
+                                    <listOptionValue value="--specs=nano.specs"/>
+                                    <listOptionValue value="--specs=rdimon.specs"/>
+                                </option>
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.STATIC.161778037" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.STATIC" value="true" valueType="boolean"/>
+                                <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.GC_SECTIONS.1891083775" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.GC_SECTIONS" value="true" valueType="boolean"/>
+                            </tool>
+                            <tool id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.hex.583137260" name="GNU Objcopy Utility" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.hex"/>
+                        </toolChain>
+                    </folderInfo>
+                </configuration>
+            </storageModule>
+            <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+        </cconfiguration>
+    </storageModule>
+    <storageModule moduleId="cdtBuildSystem" version="4.0.0">
+        <project id="lab2_interrupt_timer_pwm.com.ti.ccstudio.buildDefinitions.MSP432.ProjectType.925522131" name="MSP432" projectType="com.ti.ccstudio.buildDefinitions.MSP432.ProjectType"/>
+    </storageModule>
+</cproject>

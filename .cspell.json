@@ -63,6 +63,12 @@
         "CPHA",
         "PCLKDIV",
         "JTAG",
-        "semihosting"
+        "semihosting",
+        "Taiko",
+        "Tatsujin",
+        "BPM",
+        "Armv",
+        "USCI",
+        "TICLANG"
     ]
 }
