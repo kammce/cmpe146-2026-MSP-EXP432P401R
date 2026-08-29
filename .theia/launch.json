@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "MSP432P401R.ccxml",
+            "type": "ccs-debug",
+            "request": "launch",
+            "targetConfig": "${workspaceFolder}/lab1_gpio/targetConfigs/MSP432P401R.ccxml"
+        },
+        {
+            "name": "lab1_gpio",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "lab1_gpio",
+                "resourceId": "/lab1_gpio"
+            }
+        }
+    ]
+}
