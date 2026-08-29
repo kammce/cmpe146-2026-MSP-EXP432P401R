@@ -4,12 +4,19 @@
 
 #include "../hal/gpio.hpp"
 
+// Routes std::printf output to the CCS Console over JTAG semihosting.
+// Requires the debugger to stay connected and running - output is lost if
+// you disconnect or power-cycle the board instead of debugging it live.
+extern "C" void initialise_monitor_handles(void);
+
 int main()
 {
   // Stop the watchdog timer. Without this, the device resets a few seconds
   // after boot. This is the only DriverLib call allowed in this lab - it is
   // boilerplate, not part of the GPIO driver you are writing.
   MAP_WDT_A_holdTimer();
+
+  initialise_monitor_handles();
 
   std::printf("Hello, World\n");
 
@@ -24,7 +31,6 @@ int main()
   // port/pin each button is wired to.
 
   while (true) {
-    std::printf("Test log\n");
     // TODO(lab1, step 3): implement the button -> LED color behavior
     // described in README.md
   }

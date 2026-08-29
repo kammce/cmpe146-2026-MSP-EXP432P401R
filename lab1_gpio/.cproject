@@ -71,7 +71,7 @@
                                     <listOptionValue value="gcc"/>
                                     <listOptionValue value="c"/>
                                     <listOptionValue value="m"/>
-                                    <listOptionValue value="nosys"/>
+                                    <listOptionValue value="rdimon"/>
                                 </option>
                                 <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.OTHER_FLAGS.35926803" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.OTHER_FLAGS" valueType="stringList">
                                     <listOptionValue value="-march=armv7e-m"/>
@@ -79,6 +79,7 @@
                                     <listOptionValue value="-mfloat-abi=hard"/>
                                     <listOptionValue value="-mfpu=fpv4-sp-d16"/>
                                     <listOptionValue value="--specs=nano.specs"/>
+                                    <listOptionValue value="--specs=rdimon.specs"/>
                                 </option>
                                 <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.STATIC.161778037" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.STATIC" value="true" valueType="boolean"/>
                                 <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.GC_SECTIONS.1891083775" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.GC_SECTIONS" value="true" valueType="boolean"/>

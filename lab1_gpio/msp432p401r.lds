@@ -151,6 +151,7 @@ SECTIONS {
         end = __heap_start__;
         _end = end;
         __end = end;
+        __end__ = end;
         KEEP (*(.heap))
         __heap_end__ = .;
         __HeapLimit = __heap_end__;

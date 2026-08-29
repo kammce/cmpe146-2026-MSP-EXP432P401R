@@ -61,6 +61,8 @@
         "offsetof",
         "uintptr",
         "CPHA",
-        "PCLKDIV"
+        "PCLKDIV",
+        "JTAG",
+        "semihosting"
     ]
 }
