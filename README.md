@@ -41,7 +41,12 @@ cmpe146-2026-MSP-EXP432P401R/
 │                               user guide PDFs.
 ├── docs/                       CCS setup instructions and other non-chip
 │                               reference docs.
+├── third_party/                Small vendored header-only utilities (a
+│                               std::span polyfill for this toolchain).
 ├── lab1_gpio/                  Lab 1: GPIO driver, from scratch.
+├── lab2_interrupt_timer_pwm/   Lab 2: interrupts, timer, PWM, from scratch.
+├── lab3_spi/                   Lab 3: SPI driver + NOR flash.
+├── lab4_i2c/                   Lab 4: I2C driver + BMI160 IMU.
 ├── style.md                    This codebase's C++ style guide.
 └── .clang-format, .clang-tidy,  Formatting, lint, and spell-check config
     .cspell.json,                used by this repo's pre-commit hooks and
