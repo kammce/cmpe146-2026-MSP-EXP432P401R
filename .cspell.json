@@ -60,6 +60,7 @@
         "minimp",
         "offsetof",
         "uintptr",
-        "CPHA"
+        "CPHA",
+        "PCLKDIV"
     ]
 }

@@ -164,4 +164,3 @@ SECTIONS {
 	__StackTop = ORIGIN(REGION_STACK) + LENGTH(REGION_STACK);
     PROVIDE(__stack = __StackTop);
 }
-
