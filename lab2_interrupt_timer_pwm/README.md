@@ -8,9 +8,6 @@ In this lab you will:
 3. Build a simplified rhythm game that coordinates all four drivers
    (including `gpio` from lab 1).
 
-This document is the complete assignment: what to build, how it's
-graded, and how to get started.
-
 ## Overview
 
 Build a simplified
