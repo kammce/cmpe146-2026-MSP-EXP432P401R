@@ -2,7 +2,7 @@
 
 For this lab, you will:
 
-1. Implement an ADC driver using DriverLib, with DMA-driven sampling of a
+1. Implement an ADC driver, with DMA-driven sampling of a
    TMP36 analog temperature sensor.
 2. Implement a UART/serial driver with an independent DMA-backed circular
    receive buffer.
@@ -42,7 +42,7 @@ This lab requires FreeRTOS. Two boards play two different roles:
 Both roles are implemented in the same `lab5_adc_uart_crc.cpp` file. A
 `constexpr device_role this_device` near the top of the file picks which
 role's tasks `main()` creates, and an `if constexpr` in `main()` compiles in
-only that role's task - the other role's code is discarded at compile time,
+only that role's task. The other role's code is discarded at compile time,
 so a single codebase produces either board's firmware. For this lab, flip
 `this_device` by hand and rebuild before flashing each board; the comment
 above it explains how you'd instead drive this from a compiler define on
@@ -59,19 +59,26 @@ The exchange itself:
    `crc32_hardware` driver and the supplied `crc32_software` reference
    (timing each with a `lab2::steady_clock` and printing both durations, so
    you can see which is faster), and transmit the 64 temperature values with
-   the CRC appended over UART.
+   the CRC appended over UART. Before transmitting, poll one of its own
+   buttons (S1 or S2, your choice). If it's being held down, flip one bit
+   somewhere in the outgoing packet before sending it. This doesn't need an
+   interrupt; a plain level read at transmit time is enough. It gives you an
+   on-demand way to demonstrate the CRC check catching corrupted data
+   without editing and reflashing code.
 3. Display board: receive the batch, validate its CRC, and set the RGB LED
-   color from the readings. If the CRC is invalid, drop the packet and print
-   an appropriate message instead.
+   color from the readings. If the CRC is invalid, drop the packet, print an
+   appropriate message, and turn the RGB LED magenta instead of updating it
+   with a color derived from the (untrustworthy) readings.
 
 The wire format for a single temperature value is your choice, as long as
-it can resolve at least 0.5 degC steps - a plain whole-degree integer
+it can resolve at least 0.5 degC steps. A plain whole-degree integer
 cannot. Both boards need to agree on whatever encoding you pick, since one
 side writes it and the other reads it back.
 
 Each of these should be its own class function (or set of class functions)
 added to the `adc_driver`, `serial_driver`, and `crc32_hardware` classes
-within the `lab5_adc_uart_crc.cpp` file.
+within the `lab5_adc_uart_crc.cpp` file. All three drivers are written from
+scratch, register-level - no DriverLib anywhere in this lab.
 
 `adc16_stream` fills an entire buffer per call, rather than returning one
 sample at a time - the ADC driver must use DMA to configure a single
@@ -83,16 +90,22 @@ be backed by a circular buffer that a **separate** DMA transfer (or
 interrupt) fills continuously in the background - see `receive_cursor()`'s
 docs in `serial.hpp` for how a caller is expected to consume it. That means
 the sensor board runs two independent DMA-backed transfers at once: one for
-the ADC, one for UART reception. The `crc32_hardware` driver must be
-written register-level against the on-chip CRC accelerator - no DriverLib.
-`crc32_software` is supplied and already implemented; use it as-is to check
-your hardware driver's output and as the baseline for the timing comparison.
+the ADC, one for UART reception. `crc32_software` is supplied and already
+implemented; use it as-is to check your `crc32_hardware` driver's output
+and as the baseline for the timing comparison.
+
+> [!NOTE]
+> Strictly speaking, this lab doesn't require FreeRTOS to work. The
+> DMA-transfer-complete wake-up could just as well be done synchronously -
+> the driver itself blocking on a completion flag - without an RTOS in the
+> picture at all. FreeRTOS is used here anyway, mainly to get you writing
+> against it before later labs depend on it more essentially.
 
 ## Learning Objectives
 
-- Implement a buffer-filling ADC driver, using DriverLib and DMA, that frees
-  the CPU (via putting its calling task to sleep) for the duration of a
-  whole buffered transfer rather than per sample.
+- Implement a buffer-filling ADC driver, register-level with DMA, that
+  frees the CPU (via putting its calling task to sleep) for the duration of
+  a whole buffered transfer rather than per sample.
 - Implement a UART driver with a DMA-backed circular receive buffer.
 - Implement a register-level driver for the on-chip CRC-32 accelerator, and
   measure how much it outperforms a software CRC-32 implementation.
@@ -110,8 +123,10 @@ Board: MSP-EXP432P401R LaunchPad. You will need two boards - one per role.
 Which ADC channel and UART instance/pins you use are up to you - check the
 datasheet's pin-to-peripheral function table for which pins carry ADC14 and
 eUSCI_A UART signals, and cross-connect the two boards' TX/RX lines (and
-grounds). The display board also needs the on-board RGB LED and S1/S2 -
-see [lab1_gpio/README.md](../lab1_gpio/README.md#hardware) for that wiring.
+grounds). The display board also needs the on-board RGB LED and S1/S2, and
+the sensor board needs one of S1/S2 (your choice which) for the corrupted-
+data demonstration - see
+[lab1_gpio/README.md](../lab1_gpio/README.md#hardware) for that wiring.
 
 Sensor: [TMP36](https://www.analog.com/media/en/technical-documentation/data-sheets/TMP35_36_37.pdf)
 analog temperature sensor. It outputs a voltage linearly proportional to
@@ -121,7 +136,7 @@ channel you choose on the sensor board.
 ## Grading Rubric (100 pt)
 
 1. **ADC + DMA - 15 pts.** `adc_driver` correctly implements the
-   `adc16_stream` interface using DriverLib and DMA, filling the whole given
+   `adc16_stream` interface register-level with DMA, filling the whole given
    buffer in a single transfer and putting its calling task to sleep until
    the DMA transfer-complete interrupt wakes it.
 2. **UART + DMA - 15 pts.** Serial driver transmits data at the configured
@@ -137,13 +152,14 @@ channel you choose on the sensor board.
    appended.
 6. **Display role - 10 pts.** Pressing S1 or S2 requests a batch and, once
    a valid batch arrives, sets the RGB LED color based on the readings.
-   Invalid CRCs are dropped with a printed message instead of updating the
-   LED.
+   Invalid CRCs are dropped with a printed message and the LED turns
+   magenta instead of updating with a color derived from the readings.
 7. **FreeRTOS application - 10 pts.** Each board runs the correct role's
    task, selected via the `if constexpr` in `main()`.
-8. **Corrupted data demonstration - 5 pts.** Lab instructor will ask you to
-   update your code to corrupt a single bit in the sequence to confirm that
-   the CRC checks are happening between both boards.
+8. **Corrupted data demonstration - 5 pts.** Holding S1 or S2 (your choice)
+   on the sensor board while it transmits flips one bit in the outgoing
+   packet, and the display board correctly detects and reports the
+   resulting CRC mismatch.
 9. **Code submission - 10 pts.** Submit a PR to your git repo targeting your
    `main` branch.
 
@@ -155,5 +171,3 @@ channel you choose on the sensor board.
   ADC14, DMA, eUSCI_A UART mode, and CRC32 accelerator chapters.
 - **[TMP36 datasheet](https://www.analog.com/media/en/technical-documentation/data-sheets/TMP35_36_37.pdf)** -
   output voltage vs. temperature conversion.
-- **SimpleLink MSP432 SDK DriverLib documentation** - ADC14, DMA, and UART
-  (eUSCI_A) APIs.
