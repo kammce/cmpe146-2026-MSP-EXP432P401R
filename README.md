@@ -43,6 +43,10 @@ cmpe146-2026-MSP-EXP432P401R/
 │                               reference docs.
 ├── third_party/                Small vendored header-only utilities (a
 │                               std::span polyfill for this toolchain).
+├── freertos_kernel/            Shared CCS project that builds FreeRTOS as a
+│                               library. Referenced by any lab that needs
+│                               FreeRTOS - you shouldn't need to build this
+│                               one directly.
 ├── lab1_gpio/                  Lab 1: GPIO driver, from scratch.
 ├── lab2_interrupt_timer_pwm/   Lab 2: interrupts, timer, PWM, from scratch.
 ├── lab3_spi/                   Lab 3: SPI driver + NOR flash.

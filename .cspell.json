@@ -1,6 +1,10 @@
 {
     "version": "0.2",
     "language": "en",
+    "ignorePaths": [
+        "freertos_kernel/FreeRTOS/**",
+        "freertos_kernel/FreeRTOSConfig.h"
+    ],
     "words": [
         "microcontroller",
         "microcontrollers",
@@ -69,6 +73,11 @@
         "BPM",
         "Armv",
         "USCI",
-        "TICLANG"
+        "TICLANG",
+        "MSPM0",
+        "libfreertos",
+        "croutine",
+        "MemMang",
+        "pthread"
     ]
 }
