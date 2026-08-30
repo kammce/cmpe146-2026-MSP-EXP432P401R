@@ -99,7 +99,7 @@ and as the baseline for the timing comparison.
 > DMA-transfer-complete wake-up could just as well be done synchronously -
 > the driver itself blocking on a completion flag - without an RTOS in the
 > picture at all. FreeRTOS is used here anyway, mainly to get you writing
-> against it before later labs depend on it more essentially.
+> against it before the final project.
 
 ## Learning Objectives
 
@@ -119,8 +119,8 @@ and as the baseline for the timing comparison.
 
 ## Hardware
 
-Board: MSP-EXP432P401R LaunchPad. You will need two boards - one per role.
-Which ADC channel and UART instance/pins you use are up to you - check the
+Board: MSP-EXP432P401R LaunchPad. You will need two boards, one per role.
+Which ADC channel and UART instance/pins you use are up to you. Check the
 datasheet's pin-to-peripheral function table for which pins carry ADC14 and
 eUSCI_A UART signals, and cross-connect the two boards' TX/RX lines (and
 grounds). The display board also needs the on-board RGB LED and S1/S2, and
