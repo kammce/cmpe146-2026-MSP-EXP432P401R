@@ -69,6 +69,41 @@ private:
   std::uint32_t m_crc = initial_value;
 };
 
+// TEMP: FreeRTOS task-switch smoke test. Two equal-priority tasks, each with
+// its own statically-allocated stack + TCB (no heap involved). Each task
+// delays instead of busy-looping forever, because configUSE_TIME_SLICING is
+// 0 in FreeRTOSConfig.h - without a delay/yield, equal-priority tasks never
+// hand off the CPU to each other. Delete this block once you start building
+// the real lab6 flow (that work belongs inside a task body, not in main()
+// after the scheduler starts - see the note below main()).
+namespace {
+constexpr std::uint32_t task_stack_words = 512;
+
+StaticTask_t task_one_tcb;
+StackType_t task_one_stack[task_stack_words];
+
+StaticTask_t task_two_tcb;
+StackType_t task_two_stack[task_stack_words];
+
+void task_one(void*)
+{
+  std::uint32_t count = 0;
+  while (true) {
+    std::printf("task_one: %lu\n", static_cast<unsigned long>(count++));
+    vTaskDelay(pdMS_TO_TICKS(500));
+  }
+}
+
+void task_two(void*)
+{
+  std::uint32_t count = 0;
+  while (true) {
+    std::printf("task_two: %lu\n", static_cast<unsigned long>(count++));
+    vTaskDelay(pdMS_TO_TICKS(500));
+  }
+}
+}  // namespace
+
 int main()
 {
   // Stop the watchdog timer. Without this, the device resets a few seconds
@@ -85,14 +120,84 @@ int main()
   // - it's ready to use as-is). Construct a lab1::input_pin for the
   // start/stop button and a lab2::steady_clock for timing the CRC benchmark.
 
+  // NOTE(lab6, step 4): Once you're past the smoke test below, this is where
+  // that logic goes - but it belongs inside a task body, not here. main()
+  // never returns from vTaskStartScheduler(), so anything after it only
+  // runs if scheduler startup itself fails. Wait for the button to signal
+  // start. Once started, the two devices take turns: gather the IMU
+  // reading, compute its CRC with both your crc32_hardware and the supplied
+  // crc32_software (timing each with the steady_clock and printing both
+  // durations - crc32_hardware should win), transmit the data with the CRC
+  // appended, then wait to receive the other device's data and validate its
+  // CRC and print its results. Repeat until the button signals stop.
+
+  xTaskCreateStatic(task_one,
+                    "task_one",
+                    task_stack_words,
+                    nullptr,
+                    tskIDLE_PRIORITY + 1,
+                    task_one_stack,
+                    &task_one_tcb);
+  xTaskCreateStatic(task_two,
+                    "task_two",
+                    task_stack_words,
+                    nullptr,
+                    tskIDLE_PRIORITY + 1,
+                    task_two_stack,
+                    &task_two_tcb);
+
+  vTaskStartScheduler();
+
+  // Only reached if vTaskStartScheduler() itself fails to start (e.g. the
+  // idle/timer task memory callbacks below returned something invalid).
   while (true) {
-    // TODO(lab6, step 4): Wait for the button to signal start. Once
-    // started, the two devices take turns: gather the IMU reading, compute
-    // its CRC with both your crc32_hardware and the supplied
-    // crc32_software (timing each with the steady_clock and printing both
-    // durations - crc32_hardware should win), transmit the data with the
-    // CRC appended, then wait to receive the other device's data and
-    // validate its CRC and print its results. Repeat until the button
-    // signals stop.
+    continue;
+  }
+}
+
+// FreeRTOS calls these to get memory for the idle and timer service tasks
+// now that configSUPPORT_STATIC_ALLOCATION is 1 - required any time both
+// static and dynamic allocation are enabled together, regardless of whether
+// your own tasks use static or dynamic creation.
+extern "C" void vApplicationGetIdleTaskMemory(
+  StaticTask_t** ppxIdleTaskTCBBuffer,
+  StackType_t** ppxIdleTaskStackBuffer,
+  uint32_t* pulIdleTaskStackSize)
+{
+  static StaticTask_t idle_task_tcb;
+  static StackType_t idle_task_stack[configMINIMAL_STACK_SIZE];
+
+  *ppxIdleTaskTCBBuffer = &idle_task_tcb;
+  *ppxIdleTaskStackBuffer = idle_task_stack;
+  *pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
+}
+
+extern "C" void vApplicationGetTimerTaskMemory(
+  StaticTask_t** ppxTimerTaskTCBBuffer,
+  StackType_t** ppxTimerTaskStackBuffer,
+  uint32_t* pulTimerTaskStackSize)
+{
+  static StaticTask_t timer_task_tcb;
+  static StackType_t timer_task_stack[configTIMER_TASK_STACK_DEPTH];
+
+  *ppxTimerTaskTCBBuffer = &timer_task_tcb;
+  *ppxTimerTaskStackBuffer = timer_task_stack;
+  *pulTimerTaskStackSize = configTIMER_TASK_STACK_DEPTH;
+}
+
+// Required because FreeRTOSConfig.h sets configUSE_MALLOC_FAILED_HOOK and
+// configCHECK_FOR_STACK_OVERFLOW - the kernel calls these unconditionally
+// once anything in tasks.c/heap_4.c that references them gets linked in.
+extern "C" void vApplicationMallocFailedHook(void)
+{
+  while (true) {
+    continue;
+  }
+}
+
+extern "C" void vApplicationStackOverflowHook(TaskHandle_t, char*)
+{
+  while (true) {
+    continue;
   }
 }
