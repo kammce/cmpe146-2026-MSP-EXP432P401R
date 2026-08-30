@@ -36,6 +36,9 @@
                                 <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.INCLUDE_PATH.584421955" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.compilerID.INCLUDE_PATH" valueType="includePath">
                                     <listOptionValue value="${COM_TI_SIMPLELINK_MSP432_SDK_INCLUDE_PATH}"/>
                                     <listOptionValue value="${PROJECT_ROOT}"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/../freertos_kernel"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/../freertos_kernel/FreeRTOS/Source/include"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/../freertos_kernel/FreeRTOS/Source/portable/GCC/ARM_CM4F"/>
                                     <listOptionValue value="${COM_TI_SIMPLELINK_MSP432_SDK_INSTALL_DIR}/source"/>
                                     <listOptionValue value="${COM_TI_SIMPLELINK_MSP432_SDK_INSTALL_DIR}/source/third_party/CMSIS/Include"/>
                                     <listOptionValue value="${CG_TOOL_ROOT}/arm-none-eabi/include/newlib-nano"/>
@@ -64,9 +67,11 @@
                                     <listOptionValue value="${COM_TI_SIMPLELINK_MSP432_SDK_LIBRARY_PATH}"/>
                                     <listOptionValue value="${COM_TI_SIMPLELINK_MSP432_SDK_INSTALL_DIR}/source"/>
                                     <listOptionValue value="${CG_TOOL_ROOT}/arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/../freertos_kernel/Debug"/>
                                 </option>
                                 <option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.LIBRARY.829562830" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_15.0.linkerID.LIBRARY" valueType="libs">
                                     <listOptionValue value="${COM_TI_SIMPLELINK_MSP432_SDK_LIBRARIES}"/>
+                                    <listOptionValue value="libfreertos_kernel.a"/>
                                     <listOptionValue value="ti/devices/msp432p4xx/driverlib/gcc/msp432p4xx_driverlib.a"/>
                                     <listOptionValue value="gcc"/>
                                     <listOptionValue value="c"/>
@@ -89,7 +94,9 @@
                     </folderInfo>
                 </configuration>
             </storageModule>
-            <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+            <storageModule moduleId="org.eclipse.cdt.core.externalSettings">
+                <externalSettings containerId="freertos_kernel;com.ti.ccstudio.buildDefinitions.MSP432.Debug.1056093023" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier"/>
+            </storageModule>
         </cconfiguration>
     </storageModule>
     <storageModule moduleId="cdtBuildSystem" version="4.0.0">

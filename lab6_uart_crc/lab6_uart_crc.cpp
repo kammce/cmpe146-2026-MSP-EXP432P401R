@@ -1,5 +1,8 @@
 #include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 
+#include <FreeRTOS.h>
+#include <task.h>
+
 #include <cstdint>
 #include <cstdio>
 

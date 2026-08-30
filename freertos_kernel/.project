@@ -113,10 +113,5 @@
 			<type>1</type>
 			<locationURI>COM_TI_SIMPLELINK_MSP432_SDK_INSTALL_DIR/source/ti/posix/freertos/timer.c</locationURI>
 		</link>
-		<link>
-			<name>freertos/startup/startup_msp432_gcc.c</name>
-			<type>1</type>
-			<locationURI>COM_TI_SIMPLELINK_MSP432_SDK_INSTALL_DIR/kernel/freertos/startup/startup_msp432_gcc.c</locationURI>
-		</link>
 	</linkedResources>
 </projectDescription>

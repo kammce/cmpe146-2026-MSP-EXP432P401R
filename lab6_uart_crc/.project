@@ -3,6 +3,7 @@
 	<name>lab6_uart_crc</name>
 	<comment></comment>
 	<projects>
+		<project>freertos_kernel</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
