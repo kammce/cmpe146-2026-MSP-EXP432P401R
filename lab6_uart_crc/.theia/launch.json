@@ -2,21 +2,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "MSP432P401R.ccxml",
-            "type": "ccs-debug",
-            "request": "launch",
-            "targetConfig": "${workspaceFolder}/lab1_gpio/targetConfigs/MSP432P401R.ccxml"
-        },
-        {
-            "name": "lab1_gpio",
-            "type": "ccs-debug",
-            "request": "launch",
-            "projectInfo": {
-                "name": "lab1_gpio",
-                "resourceId": "/lab1_gpio"
-            }
-        },
-        {
             "name": "lab6_uart_crc",
             "type": "ccs-debug",
             "request": "launch",
@@ -29,9 +14,9 @@
                     "name": "Texas Instruments XDS110 USB Debug Probe",
                     "cores": [
                         {
-                            "name": "CORTEX_M4_0",
+                            "name": "CORTEX_M4",
                             "debuggerSettings": {
-                                "data": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n<PropertyValues/>\n"
+                                "data": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n<PropertyValues>\n\n  <property id=\"FlashFiles\">\n    <curValue></curValue>\n  </property>\n\n</PropertyValues>\n"
                             }
                         }
                     ]
