@@ -51,9 +51,9 @@ cmpe146-2026-MSP-EXP432P401R/
 ├── lab2_interrupt_timer_pwm/   Lab 2: interrupts, timer, PWM, from scratch.
 ├── lab3_spi/                   Lab 3: SPI driver + NOR flash.
 ├── lab4_i2c/                   Lab 4: I2C driver + BMI160 IMU.
-├── lab6_uart_crc/              Lab 6: UART driver + CRC-32 (lab5_adc_dac
-│                               isn't ported yet, so this only exchanges IMU
-│                               data, not ADC data).
+├── lab5_adc_uart_crc/          Lab 5: ADC + UART + CRC (FreeRTOS) - combines
+│                               the sibling repo's lab5 and lab6 into one
+│                               assignment.
 ├── style.md                    This codebase's C++ style guide.
 └── .clang-format, .clang-tidy,  Formatting, lint, and spell-check config
     .cspell.json,                used by this repo's pre-commit hooks and

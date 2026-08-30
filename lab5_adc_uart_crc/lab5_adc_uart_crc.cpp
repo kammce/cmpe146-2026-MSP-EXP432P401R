@@ -1,15 +1,16 @@
 #include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 
-#include <FreeRTOS.h>
-#include <task.h>
-
+#include <array>
 #include <cstdint>
 #include <cstdio>
 
-#include "../hal/accelerometer.hpp"
+#include <FreeRTOS.h>
+#include <queue.h>
+#include <task.h>
+
+#include "../hal/adc.hpp"
 #include "../hal/crc.hpp"
 #include "../hal/gpio.hpp"
-#include "../hal/i2c.hpp"
 #include "../hal/serial.hpp"
 #include "../hal/timer.hpp"
 
@@ -18,16 +19,28 @@
 // you disconnect or power-cycle the board instead of debugging it live.
 extern "C" void initialise_monitor_handles(void);
 
-// TODO(lab6, step 1): Make this class inherit from and implement the
+// TODO(lab, step 1): Make this class inherit from and implement the
+// `lab5::adc16_stream` interface (`adc.hpp`), wired to the TMP36's ADC
+// channel. DriverLib is allowed for this driver. read() must configure a
+// single DMA transfer that fills the entire given buffer with consecutive
+// conversions, put the calling FreeRTOS task to sleep (e.g. block on a
+// semaphore or task notification) for the duration of that transfer, and
+// let the DMA transfer-complete interrupt wake it once the buffer is full -
+// one sleep per buffer, not one per sample.
+class adc_driver
+{};
+
+// TODO(lab, step 2): Make this class inherit from and implement the
 // `lab6::serial` interface (`serial.hpp`), using DriverLib or register-level
 // code. driver_receive_buffer()/driver_receive_cursor() must be backed by a
-// circular buffer that a DMA transfer fills continuously in the background.
-// See `lab6::serial::receive_cursor()`'s docs for how a caller is expected to
-// consume it.
+// circular buffer that a second, independent DMA transfer fills continuously
+// in the background - this is a separate DMA channel from the one the ADC
+// driver uses above. See `lab6::serial::receive_cursor()`'s docs for how a
+// caller is expected to consume it.
 class serial_driver
 {};
 
-// TODO(lab6, step 2): Make this class inherit from and implement the
+// TODO(lab, step 3): Make this class inherit from and implement the
 // `lab6::crc32` interface (`crc.hpp`), written register-level against the
 // on-chip CRC accelerator peripheral - no DriverLib. This is the
 // hardware-accelerated implementation you'll benchmark against the
@@ -69,37 +82,66 @@ private:
   std::uint32_t m_crc = initial_value;
 };
 
-// TEMP: FreeRTOS task-switch smoke test. Two equal-priority tasks, each with
-// its own statically-allocated stack + TCB (no heap involved). Each task
-// delays instead of busy-looping forever, because configUSE_TIME_SLICING is
-// 0 in FreeRTOSConfig.h - without a delay/yield, equal-priority tasks never
-// hand off the CPU to each other. Delete this block once you start building
-// the real lab6 flow (that work belongs inside a task body, not in main()
-// after the scheduler starts - see the note below main()).
+// TMP36 outputs 500 mV at 0 degC and scales linearly at 10 mV/degC (see the
+// TMP36 datasheet's "Temperature Conversion" section). p_sample follows
+// `lab5::adc16_stream::read()`'s contract: a 16-bit value proportional to
+// the measured voltage from Vss (0V) to Vcc.
+//
+// TODO(lab, step 4): Confirm the Vcc you actually wired the TMP36 and ADC
+// reference to - this assumes 3.3V. If your reference voltage differs,
+// update tmp36_vcc_millivolts to match, or the conversion will be wrong.
+constexpr float tmp36_vcc_millivolts = 3300.0F;
+
+float tmp36_to_celsius(std::uint16_t p_sample)
+{
+  float const millivolts =
+    (static_cast<float>(p_sample) / 65535.0F) * tmp36_vcc_millivolts;
+  return (millivolts - 500.0F) / 10.0F;
+}
+
 namespace {
+constexpr std::size_t samples_per_average = 64;
+constexpr std::size_t queue_size = 1;
 constexpr std::uint32_t task_stack_words = 512;
 
-StaticTask_t task_one_tcb;
-StackType_t task_one_stack[task_stack_words];
+StaticQueue_t temperature_queue_control_block;
+std::array<float, queue_size> temperature_queue_storage;
+QueueHandle_t temperature_queue;
 
-StaticTask_t task_two_tcb;
-StackType_t task_two_stack[task_stack_words];
+StaticTask_t adc_task_tcb;
+StackType_t adc_task_stack[task_stack_words];
 
-void task_one(void*)
+StaticTask_t exchange_task_tcb;
+StackType_t exchange_task_stack[task_stack_words];
+
+void adc_task(void*)
 {
-  std::uint32_t count = 0;
+  // TODO(lab, step 5): Construct an adc_driver. Every iteration, declare a
+  // local `std::array<std::uint16_t, samples_per_average>` buffer, fill it
+  // with one call to adc_driver::read() (one DMA transfer, one task sleep),
+  // average the buffer's contents, convert the average to Celsius with
+  // tmp36_to_celsius(), and send the result onto temperature_queue for the
+  // exchange task to pick up.
   while (true) {
-    std::printf("task_one: %lu\n", static_cast<unsigned long>(count++));
-    vTaskDelay(pdMS_TO_TICKS(2000));
+    continue;
   }
 }
 
-void task_two(void*)
+void exchange_task(void*)
 {
-  std::uint32_t count = 0;
+  // TODO(lab, step 6): Construct a serial_driver, a crc32_hardware
+  // (crc32_software above needs no setup - it's ready to use as-is), a
+  // lab1::input_pin for the start/stop button, and a lab2::steady_clock for
+  // timing the CRC benchmark. Wait for the button to signal start. Once
+  // started, on each pass: block on temperature_queue for the next averaged
+  // reading, compute its CRC-32 with both crc32_hardware and
+  // crc32_software (timing each with the steady_clock and printing both
+  // durations - crc32_hardware should win), transmit the reading with the
+  // CRC appended over UART, then wait to receive the other board's packet,
+  // validate its CRC, and print its result. Repeat until the button
+  // signals stop.
   while (true) {
-    std::printf("task_two: %lu\n", static_cast<unsigned long>(count++));
-    vTaskDelay(pdMS_TO_TICKS(5000));
+    continue;
   }
 }
 }  // namespace
@@ -107,44 +149,34 @@ void task_two(void*)
 int main()
 {
   // Stop the watchdog timer. Without this, the device resets a few seconds
-  // after boot. This is the only DriverLib call allowed for the CRC driver -
-  // it is boilerplate, not part of the drivers you are writing.
+  // after boot. This is the only DriverLib call allowed outside of the ADC
+  // driver - it is boilerplate, not part of the drivers you are writing.
   MAP_WDT_A_holdTimer();
 
   initialise_monitor_handles();
 
   std::printf("Hello, World\n");
-  crc32_software crc;
-  // TODO(lab6, step 3): Construct your accelerometer driver (lab4), a
-  // serial_driver, and a crc32_hardware (crc32_software above needs no setup
-  // - it's ready to use as-is). Construct a lab1::input_pin for the
-  // start/stop button and a lab2::steady_clock for timing the CRC benchmark.
 
-  // NOTE(lab6, step 4): Once you're past the smoke test below, this is where
-  // that logic goes - but it belongs inside a task body, not here. main()
-  // never returns from vTaskStartScheduler(), so anything after it only
-  // runs if scheduler startup itself fails. Wait for the button to signal
-  // start. Once started, the two devices take turns: gather the IMU
-  // reading, compute its CRC with both your crc32_hardware and the supplied
-  // crc32_software (timing each with the steady_clock and printing both
-  // durations - crc32_hardware should win), transmit the data with the CRC
-  // appended, then wait to receive the other device's data and validate its
-  // CRC and print its results. Repeat until the button signals stop.
+  temperature_queue = xQueueCreateStatic(
+    temperature_queue_storage.size(),
+    sizeof(temperature_queue_storage[0]),
+    reinterpret_cast<std::uint8_t*>(temperature_queue_storage.data()),
+    &temperature_queue_control_block);
 
-  xTaskCreateStatic(task_one,
-                    "task_one",
+  xTaskCreateStatic(adc_task,
+                    "adc_task",
                     task_stack_words,
                     nullptr,
                     tskIDLE_PRIORITY + 1,
-                    task_one_stack,
-                    &task_one_tcb);
-  xTaskCreateStatic(task_two,
-                    "task_two",
+                    adc_task_stack,
+                    &adc_task_tcb);
+  xTaskCreateStatic(exchange_task,
+                    "exchange_task",
                     task_stack_words,
                     nullptr,
                     tskIDLE_PRIORITY + 1,
-                    task_two_stack,
-                    &task_two_tcb);
+                    exchange_task_stack,
+                    &exchange_task_tcb);
 
   vTaskStartScheduler();
 

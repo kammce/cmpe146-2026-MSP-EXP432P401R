@@ -17,12 +17,12 @@
             }
         },
         {
-            "name": "lab6_uart_crc",
+            "name": "lab5_adc_uart_crc",
             "type": "ccs-debug",
             "request": "launch",
             "projectInfo": {
-                "name": "lab6_uart_crc",
-                "resourceId": "/lab6_uart_crc"
+                "name": "lab5_adc_uart_crc",
+                "resourceId": "/lab5_adc_uart_crc"
             },
             "connections": [
                 {

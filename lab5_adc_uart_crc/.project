@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>lab6_uart_crc</name>
+	<name>lab5_adc_uart_crc</name>
 	<comment></comment>
 	<projects>
 		<project>freertos_kernel</project>
