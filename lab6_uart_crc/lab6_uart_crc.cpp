@@ -90,7 +90,7 @@ void task_one(void*)
   std::uint32_t count = 0;
   while (true) {
     std::printf("task_one: %lu\n", static_cast<unsigned long>(count++));
-    vTaskDelay(pdMS_TO_TICKS(500));
+    vTaskDelay(pdMS_TO_TICKS(2000));
   }
 }
 
@@ -99,7 +99,7 @@ void task_two(void*)
   std::uint32_t count = 0;
   while (true) {
     std::printf("task_two: %lu\n", static_cast<unsigned long>(count++));
-    vTaskDelay(pdMS_TO_TICKS(500));
+    vTaskDelay(pdMS_TO_TICKS(5000));
   }
 }
 }  // namespace
@@ -114,7 +114,7 @@ int main()
   initialise_monitor_handles();
 
   std::printf("Hello, World\n");
-
+  crc32_software crc;
   // TODO(lab6, step 3): Construct your accelerometer driver (lab4), a
   // serial_driver, and a crc32_hardware (crc32_software above needs no setup
   // - it's ready to use as-is). Construct a lab1::input_pin for the
