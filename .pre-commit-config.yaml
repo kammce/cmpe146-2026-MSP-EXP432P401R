@@ -22,6 +22,7 @@ repos:
       - id: clang-format
         types_or: [c, c++]
         files: \.(cpp|cppm|hpp|h|c)$
-        # Vendor TI CMSIS/startup files - kept byte-identical to the SDK's
-        # shipped source, not reformatted to this repo's house style.
-        exclude: (^|/)(startup_[A-Za-z0-9]+_gcc\.c|system_[A-Za-z0-9]+\.c)$
+        # Vendor TI CMSIS/startup files and the vendored FreeRTOS kernel -
+        # kept byte-identical to their upstream source, not reformatted to
+        # this repo's house style.
+        exclude: (^|/)(startup_[A-Za-z0-9]+_gcc\.c|system_[A-Za-z0-9]+\.c)$|^freertos_kernel/(FreeRTOS/|FreeRTOSConfig\.h$)
