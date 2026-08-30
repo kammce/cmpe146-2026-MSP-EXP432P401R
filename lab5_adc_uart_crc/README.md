@@ -4,46 +4,70 @@ For this lab, you will:
 
 1. Implement an ADC driver using DriverLib, with DMA-driven sampling of a
    TMP36 analog temperature sensor.
-2. Implement a UART/serial driver with a second, independent DMA-backed
-   circular receive buffer.
+2. Implement a UART/serial driver with an independent DMA-backed circular
+   receive buffer.
 3. Implement a hardware-accelerated CRC-32 driver, register-level against
    the on-chip CRC accelerator, and benchmark it against a supplied software
    CRC-32 implementation.
-4. Use FreeRTOS to run ADC sampling and the UART exchange as two concurrent
-   tasks connected by a queue.
-5. Exchange TMP36 temperature readings with another microcontroller over
-   UART, each frame protected by a CRC-32.
+4. Write the ADC-to-temperature conversion yourself.
+5. Use FreeRTOS to build a request/response system between two boards
+   playing different roles: a **sensor** board samples the TMP36 and a
+   **display** board requests readings and shows them on an RGB LED.
 
 ## Use cases
 
-Consider this a component of a larger product. Products where a
-DMA-sampled sensor feeding a CRC-protected UART exchange (or one like it)
+Consider this a component of a larger product. Products where a sensor node
+answering on-demand requests over a CRC-protected UART link (or one like it)
 would be used include:
 
-- Sensor nodes reporting readings to a central controller over a wired link
-- Environmental monitoring systems distributing readings between boards
+- A central controller polling one or more remote sensor nodes on demand
+  instead of being flooded with a constant stream of readings
+- Environmental monitoring systems where a display/control unit is
+  physically separate from the sensing hardware
 - Any point-to-point serial link where corrupted data must be detected
   before it's acted on
 
 ## Overview
 
-This lab requires FreeRTOS. Write an ADC driver against the `adc16_stream`
-interface (`adc.hpp`), a serial driver against the `serial` interface
-(`serial.hpp`), and a CRC-32 driver against the `crc32` interface
-(`crc.hpp`), then use them from two FreeRTOS tasks:
+This lab requires FreeRTOS. Two boards play two different roles:
 
-1. An ADC task fills a 64-sample buffer from the TMP36 in a single
-   DMA-backed transfer, averages the buffer, converts the average to
-   degrees Celsius, and sends the result onto a queue. This task should
-   sleep between samples.
-2. An exchange task waits on that queue for the next reading, computes a
-   CRC-32 over it using both your `crc32_hardware` driver and the supplied
-   `crc32_software` reference implementation (timing both with a
-   `lab2::steady_clock` and printing both durations, so you can see which
-   is faster), transmits the reading with the CRC appended over UART, then
-   waits to receive the other board's packet, validates its CRC, and prints
-   the result. The two boards take turns this way, one after the other,
-   starting and stopping the exchange on a button press.
+- The **sensor** board has the TMP36 wired to its ADC. It waits for a
+  one-byte request from the display board, then samples, converts, and
+  replies with a batch of readings.
+- The **display** board has the RGB LED and the S1/S2 buttons. Pressing
+  either button asks the sensor board for a fresh batch of readings, then
+  shows the result as a color: blue for cold, yellow for warm, red for hot
+  (the exact temperature bands are your call).
+
+Both roles are implemented in the same `lab5_adc_uart_crc.cpp` file. A
+`constexpr device_role this_device` near the top of the file picks which
+role's tasks `main()` creates, and an `if constexpr` in `main()` compiles in
+only that role's task - the other role's code is discarded at compile time,
+so a single codebase produces either board's firmware. For this lab, flip
+`this_device` by hand and rebuild before flashing each board; the comment
+above it explains how you'd instead drive this from a compiler define on
+the build system's command line if you wanted, say, a CI job to build both
+roles from one invocation without hand-editing source.
+
+The exchange itself:
+
+1. Display board: wait for S1 or S2 to be pressed, then transmit a one-byte
+   command to the sensor board.
+2. Sensor board: on receiving that command, fill a 64-sample buffer from
+   the TMP36 in a single DMA-backed ADC transfer, convert each raw sample to
+   a temperature value, compute a CRC-32 over the batch with both your
+   `crc32_hardware` driver and the supplied `crc32_software` reference
+   (timing each with a `lab2::steady_clock` and printing both durations, so
+   you can see which is faster), and transmit the 64 temperature values with
+   the CRC appended over UART.
+3. Display board: receive the batch, validate its CRC, and set the RGB LED
+   color from the readings. If the CRC is invalid, drop the packet and print
+   an appropriate message instead.
+
+The wire format for a single temperature value is your choice, as long as
+it can resolve at least 0.5 degC steps - a plain whole-degree integer
+cannot. Both boards need to agree on whatever encoding you pick, since one
+side writes it and the other reads it back.
 
 Each of these should be its own class function (or set of class functions)
 added to the `adc_driver`, `serial_driver`, and `crc32_hardware` classes
@@ -58,9 +82,9 @@ buffer, not one per sample). The UART driver's receive side must similarly
 be backed by a circular buffer that a **separate** DMA transfer (or
 interrupt) fills continuously in the background - see `receive_cursor()`'s
 docs in `serial.hpp` for how a caller is expected to consume it. That means
-this lab uses two independent DMA-backed transfers at once: one for the ADC,
-one for UART reception. The `crc32_hardware` driver must be written
-register-level against the on-chip CRC accelerator - no DriverLib.
+the sensor board runs two independent DMA-backed transfers at once: one for
+the ADC, one for UART reception. The `crc32_hardware` driver must be
+written register-level against the on-chip CRC accelerator - no DriverLib.
 `crc32_software` is supplied and already implemented; use it as-is to check
 your hardware driver's output and as the baseline for the timing comparison.
 
@@ -69,28 +93,30 @@ your hardware driver's output and as the baseline for the timing comparison.
 - Implement a buffer-filling ADC driver, using DriverLib and DMA, that frees
   the CPU (via putting its calling task to sleep) for the duration of a
   whole buffered transfer rather than per sample.
-- Implement a UART driver with a DMA-backed circular receive buffer,
-  running alongside the ADC's own independent DMA transfer.
+- Implement a UART driver with a DMA-backed circular receive buffer.
 - Implement a register-level driver for the on-chip CRC-32 accelerator, and
   measure how much it outperforms a software CRC-32 implementation.
-- Use FreeRTOS tasks and a queue to move data between a producer (ADC
-  sampling) and a consumer (the UART exchange) running concurrently.
-- Design and implement a simple point-to-point exchange protocol, gated by
-  a button, between two independently-running devices.
+- Convert a raw ADC sample from an analog temperature sensor into an actual
+  temperature value.
+- Design a simple request/response protocol between two independently
+  running devices with different roles.
+- Use `if constexpr` on a compile-time constant to build one codebase into
+  either of two different firmware images.
 - Detect corrupted data using a checksum computed on both ends of a link.
 
 ## Hardware
 
-Board: MSP-EXP432P401R LaunchPad. You will need two boards to exchange data
-with each other. Which ADC channel and UART instance/pins you use are up to
-you - check the datasheet's pin-to-peripheral function table for which pins
-carry ADC14 and eUSCI_A UART signals, and cross-connect the two boards'
-TX/RX lines (and grounds).
+Board: MSP-EXP432P401R LaunchPad. You will need two boards - one per role.
+Which ADC channel and UART instance/pins you use are up to you - check the
+datasheet's pin-to-peripheral function table for which pins carry ADC14 and
+eUSCI_A UART signals, and cross-connect the two boards' TX/RX lines (and
+grounds). The display board also needs the on-board RGB LED and S1/S2 -
+see [lab1_gpio/README.md](../lab1_gpio/README.md#hardware) for that wiring.
 
 Sensor: [TMP36](https://www.analog.com/media/en/technical-documentation/data-sheets/TMP35_36_37.pdf)
 analog temperature sensor. It outputs a voltage linearly proportional to
 temperature (500 mV at 0 degC, +10 mV/degC) - wire its output to the ADC
-channel you choose.
+channel you choose on the sensor board.
 
 ## Grading Rubric (100 pt)
 
@@ -104,18 +130,21 @@ channel you choose.
 3. **CRC driver - 15 pts.** `crc32_hardware` produces a CRC that matches the
    supplied `crc32_software` reference implementation, and is measurably
    faster.
-4. **FreeRTOS application - 15 pts.** ADC and exchange tasks run
-   concurrently, connected by a queue.
-5. **TMP36 conversion - 10 pts.** ADC samples are correctly averaged and
-   converted to degrees Celsius.
-6. **End-to-end exchange - 15 pts.** Temperature readings are transmitted
-   with a valid CRC appended, received, and validated on the other end. If
-   the CRC is invalid, the packet is dropped and an appropriate message is
-   printed to stdout.
-7. **Corrupted data demonstration - 5 pts.** Lab instructor will ask you to
+4. **ADC-to-temperature conversion - 10 pts.** Raw ADC samples are
+   correctly converted to temperature values that resolve at least 0.5 degC.
+5. **Sensor role - 10 pts.** On receiving the request byte, the sensor
+   board samples, converts, and transmits a 64-value batch with a valid CRC
+   appended.
+6. **Display role - 10 pts.** Pressing S1 or S2 requests a batch and, once
+   a valid batch arrives, sets the RGB LED color based on the readings.
+   Invalid CRCs are dropped with a printed message instead of updating the
+   LED.
+7. **FreeRTOS application - 10 pts.** Each board runs the correct role's
+   task, selected via the `if constexpr` in `main()`.
+8. **Corrupted data demonstration - 5 pts.** Lab instructor will ask you to
    update your code to corrupt a single bit in the sequence to confirm that
    the CRC checks are happening between both boards.
-8. **Code submission - 10 pts.** Submit a PR to your git repo targeting your
+9. **Code submission - 10 pts.** Submit a PR to your git repo targeting your
    `main` branch.
 
 ## Reference material

@@ -1,11 +1,9 @@
 #include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 
-#include <array>
 #include <cstdint>
 #include <cstdio>
 
 #include <FreeRTOS.h>
-#include <queue.h>
 #include <task.h>
 
 #include "../hal/adc.hpp"
@@ -18,6 +16,40 @@
 // Requires the debugger to stay connected and running - output is lost if
 // you disconnect or power-cycle the board instead of debugging it live.
 extern "C" void initialise_monitor_handles(void);
+
+// This lab uses two boards playing different roles: a "sensor" board with
+// the TMP36 wired to its ADC, and a "display" board with the RGB LED and
+// S1/S2 buttons. Both roles live in this one file - `this_device` below
+// picks which set of tasks main() creates.
+//
+// For this lab, flip this by hand and rebuild before flashing each board.
+// A more automated setup (e.g. a CI job that builds and flashes both roles
+// from a single invocation) would instead read this from a compiler define
+// passed on the build system's command line - something like
+// `-DDEVICE_ROLE=DEVICE_ROLE_SENSOR` added to the project's build flags -
+// rather than a hardcoded constant, so the role never has to be hand-edited
+// in source.
+enum class device_role
+{
+  sensor,
+  display,
+};
+constexpr device_role this_device = device_role::sensor;
+
+// The one-byte message the display board sends to ask the sensor board for
+// a fresh batch of readings. Its value doesn't matter - it just needs to be
+// a single recognizable byte the sensor board is watching for.
+constexpr std::uint8_t sample_request_command = 0xA5;
+
+constexpr std::size_t samples_per_batch = 64;
+
+// TODO(lab, decide): Pick an encoding for a single temperature sample that
+// can resolve at least 0.5 degC steps - a plain integer count of whole
+// degrees cannot. A fixed-point scheme (e.g. int16_t in units of 0.1 degC)
+// or a float both work. Whatever you choose, both boards must agree on it,
+// since the sensor board encodes 64 of these and the display board decodes
+// them back out.
+using temperature_sample_t = std::int16_t;
 
 // TODO(lab, step 1): Make this class inherit from and implement the
 // `lab5::adc16_stream` interface (`adc.hpp`), wired to the TMP36's ADC
@@ -35,8 +67,8 @@ class adc_driver
 // code. driver_receive_buffer()/driver_receive_cursor() must be backed by a
 // circular buffer that a second, independent DMA transfer fills continuously
 // in the background - this is a separate DMA channel from the one the ADC
-// driver uses above. See `lab6::serial::receive_cursor()`'s docs for how a
-// caller is expected to consume it.
+// driver uses on the sensor board. See `lab6::serial::receive_cursor()`'s
+// docs for how a caller is expected to consume it.
 class serial_driver
 {};
 
@@ -82,68 +114,58 @@ private:
   std::uint32_t m_crc = initial_value;
 };
 
-// TMP36 outputs 500 mV at 0 degC and scales linearly at 10 mV/degC (see the
-// TMP36 datasheet's "Temperature Conversion" section). p_sample follows
-// `lab5::adc16_stream::read()`'s contract: a 16-bit value proportional to
-// the measured voltage from Vss (0V) to Vcc.
-//
-// TODO(lab, step 4): Confirm the Vcc you actually wired the TMP36 and ADC
-// reference to - this assumes 3.3V. If your reference voltage differs,
-// update tmp36_vcc_millivolts to match, or the conversion will be wrong.
-constexpr float tmp36_vcc_millivolts = 3300.0F;
-
-float tmp36_to_celsius(std::uint16_t p_sample)
-{
-  float const millivolts =
-    (static_cast<float>(p_sample) / 65535.0F) * tmp36_vcc_millivolts;
-  return (millivolts - 500.0F) / 10.0F;
-}
-
 namespace {
-constexpr std::size_t samples_per_average = 64;
-constexpr std::size_t queue_size = 1;
 constexpr std::uint32_t task_stack_words = 512;
 
-StaticQueue_t temperature_queue_control_block;
-std::array<float, queue_size> temperature_queue_storage;
-QueueHandle_t temperature_queue;
-
-StaticTask_t adc_task_tcb;
-StackType_t adc_task_stack[task_stack_words];
-
-StaticTask_t exchange_task_tcb;
-StackType_t exchange_task_stack[task_stack_words];
-
-void adc_task(void*)
+void sensor_task(void*)
 {
-  // TODO(lab, step 5): Construct an adc_driver. Every iteration, declare a
-  // local `std::array<std::uint16_t, samples_per_average>` buffer, fill it
-  // with one call to adc_driver::read() (one DMA transfer, one task sleep),
-  // average the buffer's contents, convert the average to Celsius with
-  // tmp36_to_celsius(), and send the result onto temperature_queue for the
-  // exchange task to pick up.
+  // TODO(lab, sensor role): Construct an adc_driver, a serial_driver, and a
+  // crc32_hardware (crc32_software above needs no setup - it's ready to use
+  // as-is). Loop forever:
+  //   1. Block waiting to receive sample_request_command from the display
+  //      board (poll serial_driver's receive_cursor()/receive_buffer()).
+  //   2. Fill a `std::array<std::uint16_t, samples_per_batch>` buffer with
+  //      one call to adc_driver::read() (one DMA transfer, one task sleep).
+  //   3. Convert each raw sample to a temperature_sample_t. This is the
+  //      conversion you write yourself - see the TMP36 datasheet's
+  //      "Temperature Conversion" section (500 mV at 0 degC, +10 mV/degC),
+  //      and don't forget your ADC's actual reference voltage matters here.
+  //   4. Compute a CRC-32 over the resulting
+  //      `std::array<temperature_sample_t, samples_per_batch>` with both
+  //      crc32_hardware and the supplied crc32_software - time each with a
+  //      lab2::steady_clock and print both durations (crc32_hardware should
+  //      win).
+  //   5. Transmit the 64 samples with the CRC appended over UART.
   while (true) {
     continue;
   }
 }
 
-void exchange_task(void*)
+void display_task(void*)
 {
-  // TODO(lab, step 6): Construct a serial_driver, a crc32_hardware
-  // (crc32_software above needs no setup - it's ready to use as-is), a
-  // lab1::input_pin for the start/stop button, and a lab2::steady_clock for
-  // timing the CRC benchmark. Wait for the button to signal start. Once
-  // started, on each pass: block on temperature_queue for the next averaged
-  // reading, compute its CRC-32 with both crc32_hardware and
-  // crc32_software (timing each with the steady_clock and printing both
-  // durations - crc32_hardware should win), transmit the reading with the
-  // CRC appended over UART, then wait to receive the other board's packet,
-  // validate its CRC, and print its result. Repeat until the button
-  // signals stop.
+  // TODO(lab, display role): Construct a serial_driver, a crc32_hardware,
+  // two lab1::input_pin (S1 and S2), and three lab1::output_pin (the RGB
+  // LED). Loop forever:
+  //   1. Wait for either S1 or S2 to be pressed (edge-triggered interrupt
+  //      or polled, your choice).
+  //   2. Transmit sample_request_command to the sensor board.
+  //   3. Block waiting to receive 64 temperature_sample_t values plus a
+  //      trailing CRC-32 from the sensor board.
+  //   4. Recompute the CRC-32 over the received samples with your
+  //      crc32_hardware and compare it to the one that arrived. If it
+  //      doesn't match, drop the packet and print an appropriate message
+  //      instead of updating the LED.
+  //   5. Otherwise, turn the 64 samples into a single representative
+  //      reading (e.g. average them) and set the RGB LED's color based on
+  //      it: blue for cold, yellow for warm, red for hot. Where exactly
+  //      those bands fall is your call.
   while (true) {
     continue;
   }
 }
+
+StaticTask_t device_task_tcb;
+StackType_t device_task_stack[task_stack_words];
 }  // namespace
 
 int main()
@@ -157,26 +179,23 @@ int main()
 
   std::printf("Hello, World\n");
 
-  temperature_queue = xQueueCreateStatic(
-    temperature_queue_storage.size(),
-    sizeof(temperature_queue_storage[0]),
-    reinterpret_cast<std::uint8_t*>(temperature_queue_storage.data()),
-    &temperature_queue_control_block);
-
-  xTaskCreateStatic(adc_task,
-                    "adc_task",
-                    task_stack_words,
-                    nullptr,
-                    tskIDLE_PRIORITY + 1,
-                    adc_task_stack,
-                    &adc_task_tcb);
-  xTaskCreateStatic(exchange_task,
-                    "exchange_task",
-                    task_stack_words,
-                    nullptr,
-                    tskIDLE_PRIORITY + 1,
-                    exchange_task_stack,
-                    &exchange_task_tcb);
+  if constexpr (this_device == device_role::sensor) {
+    xTaskCreateStatic(sensor_task,
+                      "sensor_task",
+                      task_stack_words,
+                      nullptr,
+                      tskIDLE_PRIORITY + 1,
+                      device_task_stack,
+                      &device_task_tcb);
+  } else {
+    xTaskCreateStatic(display_task,
+                      "display_task",
+                      task_stack_words,
+                      nullptr,
+                      tskIDLE_PRIORITY + 1,
+                      device_task_stack,
+                      &device_task_tcb);
+  }
 
   vTaskStartScheduler();
 
