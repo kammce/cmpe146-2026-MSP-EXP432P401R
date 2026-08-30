@@ -9,8 +9,8 @@
 	<createSlaveProjects value=""/>
 	<ignoreDefaultDeviceSettings value="true"/>
 	<ignoreDefaultCCSSettings value="true"/>
-	<templateProperties value="id=lab6_uart_crc.projectspec.lab6_uart_crc,buildProfile=release,isHybrid=true"/>
+	<templateProperties value="id=lab5_adc_uart_crc.projectspec.lab5_adc_uart_crc,buildProfile=release,isHybrid=true"/>
 	<activeTargetConfiguration value="targetConfigs/MSP432P401R.ccxml"/>
 	<isTargetConfigurationManual value="false"/>
-	<filesToOpen value="README.md,lab6_uart_crc.cpp"/>
+	<filesToOpen value="README.md,lab5_adc_uart_crc.cpp"/>
 </projectOptions>

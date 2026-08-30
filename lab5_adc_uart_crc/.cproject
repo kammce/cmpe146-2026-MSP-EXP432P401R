@@ -102,6 +102,6 @@
         </cconfiguration>
     </storageModule>
     <storageModule moduleId="cdtBuildSystem" version="4.0.0">
-        <project id="lab6_uart_crc.com.ti.ccstudio.buildDefinitions.MSP432.ProjectType.925522131" name="MSP432" projectType="com.ti.ccstudio.buildDefinitions.MSP432.ProjectType"/>
+        <project id="lab5_adc_uart_crc.com.ti.ccstudio.buildDefinitions.MSP432.ProjectType.925522131" name="MSP432" projectType="com.ti.ccstudio.buildDefinitions.MSP432.ProjectType"/>
     </storageModule>
 </cproject>
