@@ -9,6 +9,29 @@
 // you disconnect or power-cycle the board instead of debugging it live.
 extern "C" void initialise_monitor_handles(void);
 
+class msp432_input : public lab1::input_pin
+{
+  msp432_input(int port, int pin)
+  {
+    if (port & 1) {
+      mask = 1 << pin;
+    } else {
+      mask = 1 << (pin + 8);
+    }
+  }
+
+  uint16_t mask;
+
+  bool driver_configure(settings const& p_settings) override
+  {
+    return false;
+  }
+  bool driver_level() override
+  {
+    return false;
+  }
+};
+
 int main()
 {
   // Stop the watchdog timer. Without this, the device resets a few seconds

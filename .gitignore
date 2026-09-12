@@ -6,3 +6,4 @@
 **/.clangd
 
 .DS_Store
+**/.codex/
