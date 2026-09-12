@@ -151,16 +151,16 @@ frequency math has the same shape for both:
    *CCRn = static_cast<std::uint16_t>((ccr0 * p_duty_cycle) / 65535UL);
    ```
 
-   > [!NOTE]
-   > The `static_cast<std::uint32_t>` on `CCR0` is load-bearing, and it has
-   > to be on an operand of the *multiply*. Two `std::uint16_t` values
-   > promote to `int` (not `unsigned`) before multiplying, and
-   > 65535 x 65535 = 4,294,836,225 overflows a 32-bit signed `int`, which
-   > is undefined behavior, not a wrapped value. Widening the divisor
-   > instead would be too late, since the division happens after the
-   > product has already been computed. With the cast, the multiply is done
-   > in unsigned 32-bit math, where the worst case still fits, and the
-   > result is narrowed back to `std::uint16_t` only at the very end.
+> [!NOTE]
+> The `static_cast<std::uint32_t>` on `CCR0` is load-bearing, and it has
+> to be on an operand of the *multiply*. Two `std::uint16_t` values
+> promote to `int` (not `unsigned`) before multiplying, and
+> 65535 x 65535 = 4,294,836,225 overflows a 32-bit signed `int`, which
+> is undefined behavior, not a wrapped value. Widening the divisor
+> instead would be too late, since the division happens after the
+> product has already been computed. With the cast, the multiply is done
+> in unsigned 32-bit math, where the worst case still fits, and the
+> result is narrowed back to `std::uint16_t` only at the very end.
 
 > [!NOTE]
 > If you want to verify the 3 MHz for yourself, it comes from two places in
