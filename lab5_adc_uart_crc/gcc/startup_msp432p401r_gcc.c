@@ -36,8 +36,9 @@
 
 #include <stdint.h>
 
-/* Entry point for the application. */
-extern int _mainCRTStartup();
+/* C/C++ runtime entry points used by the custom reset handler. */
+extern void __libc_init_array(void);
+extern int main(void);
 
 /* External declaration for system initialization function                  */
 extern void SystemInit(void);
@@ -45,6 +46,8 @@ extern void SystemInit(void);
 extern uint32_t __data_load__;
 extern uint32_t __data_start__;
 extern uint32_t __data_end__;
+extern uint32_t __bss_start__;
+extern uint32_t __bss_end__;
 extern uint32_t __StackTop;
 
 typedef void( *pFunc )( void );
@@ -183,6 +186,10 @@ void Reset_Handler(void)
 {
     uint32_t *pui32Src, *pui32Dest;
 
+    // Stop the watchdog and enable SRAM before initializing RAM. Clearing the
+    // FreeRTOS task stacks can otherwise outlast the watchdog's reset timeout.
+    SystemInit();
+
     //
     // Copy the data segment initializers from flash to SRAM.
     //
@@ -192,11 +199,20 @@ void Reset_Handler(void)
         *pui32Dest++ = *pui32Src++;
     }
 
-    /* Call system initialization routine */
-    SystemInit();
+    // Clear BSS here; main initializes the rdimon semihosting channel later.
+    for(pui32Dest = &__bss_start__; pui32Dest < &__bss_end__; )
+    {
+        *pui32Dest++ = 0;
+    }
 
-    /* Jump to the main initialization routine. */
-    _mainCRTStartup();
+    /* Run C++ constructors, then enter the application. */
+    __libc_init_array();
+    (void)main();
+
+    /* main() is not expected to return. */
+    while(1)
+    {
+    }
 }
 
 /* This is the code that gets called when the processor receives an unexpected  */

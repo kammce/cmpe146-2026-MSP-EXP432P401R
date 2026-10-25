@@ -36,6 +36,11 @@
 *
 ******************************************************************************/
 
+/*
+ * Debugger loads/restarts must use the same startup path as a hardware reset.
+ */
+ENTRY(Reset_Handler)
+
 MEMORY
 {
     MAIN_FLASH (RX) : ORIGIN = 0x00000000, LENGTH = 0x00040000
