@@ -78,6 +78,18 @@
         "libfreertos",
         "croutine",
         "MemMang",
-        "pthread"
+        "pthread",
+        "chrono",
+        "DCOCLK",
+        "MCLK",
+        "HSMCLK",
+        "SMCLK",
+        "CSCTL",
+        "DCORSEL",
+        "VOUT",
+        "unpowered",
+        "rdimon",
+        "DHCSR",
+        "DEBUGEN"
     ]
 }
