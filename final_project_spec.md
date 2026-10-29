@@ -64,9 +64,9 @@ Build an interactive embedded system of your team's choosing on the MSPM0G3507 o
 | Week | Milestone | What to submit |
 | --- | --- | --- |
 | 1 | Proposal | One paragraph describing the project and a parts list with links. Must be approved before ordering parts. |
-| 6 | Final | Final presentation to the whole lab and public demo, before finals week. |
+| 5 | Final | Final presentation to the whole lab and public demo, before finals week. |
 
-Grading is split by when each item is observed: 60 points at the presentation and 40 points from the code afterwards. The assignment is worth 45% of your grade.
+Grading is split by when each item is observed: 60 points at the presentation and 40 points from the code afterwards. The assignment is worth 15% of your grade.
 
 **At the presentation (60)**
 
