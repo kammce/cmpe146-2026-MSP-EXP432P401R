@@ -8,9 +8,10 @@ Build an interactive embedded system of your team's choosing on the MSPM0G3507 o
 - **Duration:** 5 weeks
 - **Weight:** 15% of the course grade
 - **Presentation Day:** before finals week Dec 2nd (Wednesday) & 3rd (Thursday)
-- **Presentation Duration**:
+- **Presentation duration:**
   - 5 to 10 minutes for slides
   - 5 minutes to live demo the project
+  - 5 minutes for Q&A (not graded)
 
 ## Requirements
 
@@ -31,8 +32,8 @@ Build an interactive embedded system of your team's choosing on the MSPM0G3507 o
 5. **Polish.**
    - Boots and runs standalone on USB or battery power, with no debugger attached and no reflashing between demos.
    - Survives a 5-minute public demo without a reset.
-   - **Recommended:** record at least one video of the project working as a backup for reduced points.&#32;
-6. **Presentation:** 5 to 10 min slide show presentation with 5 min for a demo. It must include these (6 elements)
+   - **Recommended:** record at least one video of the project working as a backup for reduced points.
+6. **Presentation:** 5 to 10 min slide show presentation with 5 min for a demo and 5 min for Q&A. It must include these (6 elements)
    1. A description of what the project is, why you decided to do it, and what each team member did
    2. A hardware wire diagram of the project with high level bill of materials
    3. Diagram of the software architecture
@@ -57,7 +58,7 @@ Build an interactive embedded system of your team's choosing on the MSPM0G3507 o
 **Wireless**
 
 - **Good choices:** nRF24L01 radios (SPI), or BLE UART-passthrough modules (e.g. HM-10) when a phone or PC is on the other end.
-- **D****i****f****f****i****cu****l****t****:** Wi-Fi modules driven by AT commands (e.g. ESP-01). Expect to write an asynchronous reply parser, run the module as its own access point or on a phone hotspot (campus Wi-Fi will not work), and give it a dedicated 3.3V regulator for its \~300 mA current spikes.
+- **Difficult:** Wi-Fi modules driven by AT commands (e.g. ESP-01). Expect to write an asynchronous reply parser, run the module as its own access point or on a phone hotspot (campus Wi-Fi will not work), and give it a dedicated 3.3V regulator for its \~300 mA current spikes.
 
 ## Milestones and grading
 
@@ -66,15 +67,20 @@ Build an interactive embedded system of your team's choosing on the MSPM0G3507 o
 | 1 | Proposal | One paragraph describing the project and a parts list with links. Must be approved before ordering parts. |
 | 5 | Final | Final presentation to the whole lab and public demo, before finals week. |
 
-Grading is split by when each item is observed: 60 points at the presentation and 40 points from the code afterwards. The assignment is worth 15% of your grade.
+Grading follows the syllabus breakdown: Proposal 5%, Presentation Report 50%, Functioning Demonstration 45%. The project is worth 15% of your course grade.
 
-**At the presentation (60)**
+**Proposal (5)**
+
+| Item | Full credit | Zero |
+| --- | --- | --- |
+| Proposal (5) | Submitted on time with a one-paragraph description and a parts list with links | Not submitted |
+
+**Presentation Report (50)**
+
+Slides (25), graded at the presentation:
 
 | Item | Full credit | Partial credit | Zero |
 | --- | --- | --- | --- |
-| Demo works (20) | Works live as described | (10) works after a reset or workaround, or shown only by backup video | Does not work |
-| Input and output (10) | External input visibly drives external output in real time | (5) both present but not interactive, or only one is external | Onboard devices only |
-| Standalone boot (5) | Runs from power-on with no debugger | — | Needs the debugger or a reflash |
 | Project overview slide (5) | Clearly explains what the project is, why you chose it, and what each member did | (2) present but unclear or incomplete | Missing |
 | Wiring diagram slide (4) | Clear wiring diagram with a high-level bill of materials | (2) present but unclear or incomplete | Missing |
 | Tasks slide (4) | Clearly explains each task and what it does | (2) present but unclear or incomplete | Missing |
@@ -84,15 +90,21 @@ Grading is split by when each item is observed: 60 points at the presentation an
 
 Issues encountered during development are optional in the presentation and not graded.
 
-**In the code afterwards (40)**
-
-Graded after the presentation, using the slides' task diagram as the map. A mismatch between the diagram and the code drops that item to partial credit.
+Code checked against the slides (25), graded after the presentation using the slides' task diagram as the map. A mismatch between the diagram and the code drops that item to partial credit.
 
 | Item | Full credit | Partial credit | Zero |
 | --- | --- | --- | --- |
-| Concurrency (15) | Two or more meaningful tasks communicating through a FreeRTOS primitive, plus heartbeat, matching the diagram | (7) one task is trivial, data is shared through unprotected globals, or the code doesn't match the diagram | Single task or superloop |
-| Portable drivers (15) | Two drivers with no register access, at least one for an external device, matching the diagram | (7) only one portable driver, or register access leaking in, or the code doesn't match the diagram | No portable drivers |
-| Code organization (10) | Drivers, tasks and application in separate modules with clear names | (5) works but tangled (unnecessary code, code or constants in the wrong place, two-phase initialization for driver objects) | — |
+| Concurrency (10) | Two or more meaningful tasks communicating through a FreeRTOS primitive, plus heartbeat, matching the diagram | (5) one task is trivial, data is shared through unprotected globals, or the code doesn't match the diagram | Single task or superloop |
+| Portable drivers (10) | Two drivers with no register access, at least one for an external device, matching the diagram | (5) only one portable driver, or register access leaking in, or the code doesn't match the diagram | No portable drivers |
+| Code organization (5) | Drivers, tasks and application in separate modules with clear names | (2) works but tangled (unnecessary code, code or constants in the wrong place, two-phase initialization for driver objects) | — |
+
+**Functioning Demonstration (45)**
+
+| Item | Full credit | Partial credit | Zero |
+| --- | --- | --- | --- |
+| Demo works (25) | Works live as described | (12) works after a reset or workaround, or shown only by backup video | Does not work |
+| Input and output (15) | External input visibly drives external output in real time | (7) both present but not interactive, or only one is external | Onboard devices only |
+| Standalone boot (5) | Runs from power-on with no debugger | — | Needs the debugger or a reflash |
 
 ## Example projects
 
